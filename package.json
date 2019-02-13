@@ -1,0 +1,42 @@
+{
+  "name": "bloxycrats",
+  "version": "0.0.0",
+  "description": "Converts a duplex stream to block stream",
+  "main": "index.js",
+  "scripts": {
+    "test": "happiness && jest --verbose",
+    "watch": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jue89/node-bloxycrats.git"
+  },
+  "keywords": [
+    "stream",
+    "blocks"
+  ],
+  "author": "Juergen Fitschen <me@jue.yt>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jue89/node-bloxycrats/issues"
+  },
+  "homepage": "https://github.com/jue89/node-bloxycrats#readme",
+  "devDependencies": {
+    "happiness": "^10.0.2",
+    "jest": "^24.1.0"
+  },
+  "happiness": {
+    "globals": [
+      "jest",
+      "describe",
+      "test",
+      "expect",
+      "beforeEach"
+    ]
+  },
+  "jest": {
+    "automock": false,
+    "clearMocks": true
+  },
+  "dependencies": {}
+}
