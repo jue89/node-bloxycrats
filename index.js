@@ -35,6 +35,14 @@ class Bloxy extends events.EventEmitter {
 			}
 		});
 
+		// Control back-preassure
+		this.stream.pause();
+		this.on('newListener', (event) => {
+			if (event === 'message') this.stream.resume();
+		}).on('removeListener', (event) => {
+			if (event === 'message') this.stream.pause();
+		});
+
 		// Forward close events
 		this.stream.on('close', () => this.emit('close'));
 	}

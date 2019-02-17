@@ -3,6 +3,8 @@ const events = require('events');
 const mockStreamFactory = () => {
 	const e = new events.EventEmitter();
 	e.write = jest.fn();
+	e.pause = jest.fn();
+	e.resume = jest.fn();
 	return e;
 };
 
@@ -90,4 +92,18 @@ test('forward close event', () => {
 	b.on('close', onClose);
 	stream.emit('close');
 	expect(onClose.mock.calls.length).toBe(1);
+});
+
+test('propagate back-preassure', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(0);
+	const listener = () => {};
+	b.on('message', listener);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(1);
+	b.removeListener('message', listener);
+	expect(stream.pause.mock.calls.length).toBe(2);
+	expect(stream.resume.mock.calls.length).toBe(1);
 });
