@@ -108,6 +108,27 @@ test('propagate back-preassure', () => {
 	expect(stream.resume.mock.calls.length).toBe(1);
 });
 
+test('propagate back-preassure on multiple listeners', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(0);
+	const listener1 = () => {};
+	b.on('message', listener1);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(1);
+	const listener2 = () => {};
+	b.on('message', listener2);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(1);
+	b.removeListener('message', listener1);
+	expect(stream.pause.mock.calls.length).toBe(1);
+	expect(stream.resume.mock.calls.length).toBe(1);
+	b.removeListener('message', listener2);
+	expect(stream.pause.mock.calls.length).toBe(2);
+	expect(stream.resume.mock.calls.length).toBe(1);
+});
+
 test('complain about to long buffers', () => {
 	const stream = mockStreamFactory();
 	const b = new Bloxy(stream);
