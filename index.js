@@ -1,5 +1,7 @@
 const events = require('events');
 
+const MAX_BLOCK_SIZE = Math.pow(2, 32) - 1;
+
 class Bloxy extends events.EventEmitter {
 	constructor (stream) {
 		super();
@@ -48,13 +50,24 @@ class Bloxy extends events.EventEmitter {
 	}
 
 	send (buf) {
+		// Make sure buf is always an array
 		if (!(buf instanceof Array)) buf = [ buf ];
+
+		// Prepare length field
+		const length = buf.reduce((len, b) => len + b.length, 0);
+		if (length > MAX_BLOCK_SIZE) return Promise.reject(new Error('Buffer too long'));
 		const lengthField = Buffer.alloc(4);
-		lengthField.writeUInt32BE(buf.reduce((len, b) => len + b.length, 0), 0);
-		this.stream.write(lengthField);
-		return Promise.all(buf.map((b) => new Promise((resolve) => {
-			this.stream.write(b, resolve);
-		})));
+		lengthField.writeUInt32BE(length, 0);
+
+		// Send frame
+		const jobs = [];
+		const sendBlock = (b) => jobs.push(new Promise((resolve) => {
+			if (b.length === 0) resolve();
+			else this.stream.write(b, resolve);
+		}));
+		sendBlock(lengthField);
+		buf.forEach((b) => sendBlock(b));
+		return Promise.all(jobs);
 	}
 }
 
