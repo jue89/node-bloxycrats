@@ -1,6 +1,6 @@
 # Bloxycrats
 
-This module transforms a duplex stream (e.g. TCP or TLS stream) into a block-oriented interface, like the `dgram` interface.
+This module transforms a duplex stream (e.g. TCP or TLS stream) into a block-oriented interface. The API has been inspired by Node's `dgram` API but is not 100% compatible.
 
 ## Example
 
@@ -39,17 +39,17 @@ Convert the duplex stream `stream` into the block-oriented interface `connection
 ### Method: send
 
 ```js
-connection.send(buffer).then(() => {...});
+connection.send(block).then(() => {...});
 ```
 
-Sends `buffer` to the other side. The returned **Promise** resolves once all data is flushed.
+Sends `block` to the other side. The returned **Promise** resolves once all data is flushed. *Please note: Back-pressure is not handled by this method. So please wait for the data to be flushed before sending the next block.*
 
-`buffer` is an instance of **Buffer** or an **Array** of **Buffer** that is concatenated before it goes on the wire.
+`block` is an instance of **Buffer** or an **Array** of **Buffer** that is concatenated before it goes on the wire.
 
 ### Event: message
 
 ```js
-connection.on('message', (buffer) => {...});
+connection.on('message', (block) => {...});
 ```
 
 This event is raised, once a complete buffer has been received.
@@ -58,7 +58,7 @@ This event is raised, once a complete buffer has been received.
 ### Event: close
 
 ```js
-connection.on('close', (buffer) => {...});
+connection.on('close', () => {...});
 ```
 
 This event is raised, once the underlaying stream has been closed.
