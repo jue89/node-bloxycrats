@@ -46,6 +46,14 @@ Sends `block` to the other side. The returned **Promise** resolves once all data
 
 `block` is an instance of **Buffer** or an **Array** of **Buffer** that is concatenated before it goes on the wire.
 
+### Method: close
+
+```js
+connection.close().then(() => {...});
+```
+
+Destroys the underlaying stream and resolved once the close event is fired or if the stream is already destroyed.
+
 ### Event: message
 
 ```js
@@ -55,10 +63,12 @@ connection.on('message', (block) => {...});
 This event is raised, once a complete buffer has been received.
 
 
-### Event: close
+### Events: close, end, error
 
 ```js
 connection.on('close', () => {...});
+connection.on('end', () => {...});
+connection.on('error', (err) => {...});
 ```
 
-This event is raised, once the underlaying stream has been closed.
+These events are forwarded from the underlaying stream.
