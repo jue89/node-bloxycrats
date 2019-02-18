@@ -5,6 +5,7 @@ const mockStreamFactory = () => {
 	e.write = jest.fn();
 	e.pause = jest.fn();
 	e.resume = jest.fn();
+	e.destroy = jest.fn();
 	return e;
 };
 
@@ -176,4 +177,22 @@ test('resolve promise if all chunks have been flushed', () => {
 	const b = new Bloxy(stream);
 	stream.write.mockImplementation((data, cb) => cb());
 	return b.send([block1, block2]);
+});
+
+test('destroy stream on close', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	const q = b.close();
+	expect(stream.destroy.mock.calls.length).toBe(1);
+	b.emit('close');
+	return q;
+});
+
+test('return to close calls if the socket already has been destroyed', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	stream.destroyed = true;
+	const q = b.close();
+	expect(stream.destroy.mock.calls.length).toBe(1);
+	return q;
 });

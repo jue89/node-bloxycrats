@@ -75,6 +75,12 @@ class Bloxy extends events.EventEmitter {
 		buf.forEach((b) => sendBlock(b));
 		return Promise.all(jobs);
 	}
+
+	close () {
+		this.stream.destroy();
+		if (this.stream.destroyed) return Promise.resolve();
+		else return new Promise((resolve) => this.on('close', resolve));
+	}
 }
 
 module.exports = Bloxy;
