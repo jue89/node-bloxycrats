@@ -51,6 +51,8 @@ class Bloxy extends events.EventEmitter {
 
 		// Forward close events
 		this.stream.on('close', () => this.emit('close'));
+		this.stream.on('end', () => this.emit('end'));
+		this.stream.on('error', (err) => this.emit('error', err));
 	}
 
 	send (buf) {

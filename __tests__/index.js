@@ -94,6 +94,26 @@ test('forward close event', () => {
 	expect(onClose.mock.calls.length).toBe(1);
 });
 
+test('forward end event', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	const onEnd = jest.fn();
+	b.on('end', onEnd);
+	stream.emit('end');
+	expect(onEnd.mock.calls.length).toBe(1);
+});
+
+test('forward error event', () => {
+	const stream = mockStreamFactory();
+	const b = new Bloxy(stream);
+	const onError = jest.fn();
+	b.on('error', onError);
+	const err = new Error();
+	stream.emit('error', err);
+	expect(onError.mock.calls.length).toBe(1);
+	expect(onError.mock.calls[0][0]).toBe(err);
+});
+
 test('propagate back-preassure', () => {
 	const stream = mockStreamFactory();
 	const b = new Bloxy(stream);
