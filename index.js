@@ -51,6 +51,8 @@ class Bloxy extends events.EventEmitter {
 
 		// Forward close events
 		this.stream.on('close', () => this.emit('close'));
+		this.stream.on('end', () => this.emit('end'));
+		this.stream.on('error', (err) => this.emit('error', err));
 	}
 
 	send (buf) {
@@ -72,6 +74,12 @@ class Bloxy extends events.EventEmitter {
 		sendBlock(lengthField);
 		buf.forEach((b) => sendBlock(b));
 		return Promise.all(jobs);
+	}
+
+	close () {
+		this.stream.destroy();
+		if (this.stream.destroyed) return Promise.resolve();
+		else return new Promise((resolve) => this.on('close', resolve));
 	}
 }
 
